@@ -1,187 +1,78 @@
-<!-- redeploy trigger -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Israel Market Interactive Dashboard</title>
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f3f4f6;
-      margin: 0;
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: auto;
-      background: white;
-      border-radius: 20px;
-      padding: 25px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 5px;
-    }
-
-    p {
-      text-align: center;
-      color: #666;
-      margin-bottom: 25px;
-    }
-
-    canvas {
-      background: #fafafa;
-      border-radius: 16px;
-      padding: 10px;
-    }
-
-    .info {
-      margin-top: 25px;
-      background: #eef6ff;
-      border: 1px solid #cfe2ff;
-      padding: 20px;
-      border-radius: 16px;
-    }
-
-    .info h2 {
-      margin-top: 0;
-    }
-
-    ul {
-      line-height: 1.8;
-    }
-
-    .footer {
-      margin-top: 20px;
-      text-align: center;
-      color: #777;
-      font-size: 14px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Israel Market Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body { margin:0; font-family:Arial,sans-serif; background:#f3f4f6; }
+.container { max-width:1400px; margin:auto; background:white; min-height:100vh; padding:10px; }
+h1 { text-align:center; font-size:28px; margin-bottom:5px; }
+.subtitle { text-align:center; color:#666; margin-bottom:10px; }
+.chart-wrapper { width:100%; height:80vh; background:#fafafa; border-radius:16px; padding:10px; box-sizing:border-box; }
+canvas { width:100%!important; height:100%!important; }
+.info { margin-top:20px; background:#eef6ff; border-radius:16px; padding:15px; }
+summary { font-size:22px; font-weight:bold; cursor:pointer; }
+ul { line-height:1.9; }
+@media (max-width:768px){
+h1 { font-size:22px; }
+.chart-wrapper { height:82vh; }
+}
+</style>
 </head>
 <body>
 
 <div class="container">
-  <h1>Israel Market Interactive Dashboard</h1>
-  <p>Real Index Values (1990 = 100)</p>
+<h1>Israel Market Interactive Dashboard</h1>
 
-  <canvas id="marketChart"></canvas>
+<p class="subtitle">Real Index Values (1990 = 100)</p>
 
-  <div class="info">
-    <h2>Economic Insights</h2>
-    <ul>
-      <li>Wage purchasing power increased gradually over time.</li>
-      <li>Housing prices and gold dramatically outpaced wages.</li>
-      <li>Controlled milk and electricity prices remained relatively stable.</li>
-      <li>Fruits & vegetables showed moderate inflation.</li>
-      <li>USD/ILS declined versus the 1990 baseline.</li>
-    </ul>
-  </div>
+<div class="chart-wrapper">
+<canvas id="marketChart"></canvas>
+</div>
 
-  <div class="footer">
-    Interactive chart with hover markers and live values.
-  </div>
+<div class="info">
+<details>
+<summary>Economic Insights</summary>
+<ul>
+<li>Wage purchasing power increased gradually over time.</li>
+<li>Housing prices and gold dramatically outpaced wages.</li>
+<li>Controlled milk and electricity prices remained relatively stable.</li>
+<li>Fruits & vegetables showed moderate inflation.</li>
+<li>USD/ILS declined versus the 1990 baseline.</li>
+</ul>
+</details>
+</div>
 </div>
 
 <script>
 const ctx = document.getElementById('marketChart');
 
 new Chart(ctx, {
-  type: 'line',
-  data: {
-    labels: [1990, 2000, 2010, 2020, 2026],
-    datasets: [
-      {
-        label: 'Gold Price (Real)',
-        data: [100, 70, 312, 482, 680],
-        borderColor: '#c89b1d',
-        backgroundColor: '#c89b1d',
-        tension: 0.3
-      },
-      {
-        label: 'Housing Prices',
-        data: [100, 152, 180, 282, 355],
-        borderColor: '#d9534f',
-        backgroundColor: '#d9534f',
-        tension: 0.3
-      },
-      {
-        label: 'Wage Purchasing Power',
-        data: [100, 137, 132, 160, 171],
-        borderColor: '#1976d2',
-        backgroundColor: '#1976d2',
-        tension: 0.3
-      },
-      {
-        label: 'Milk Price (Controlled)',
-        data: [100, 106, 104, 88, 93],
-        borderColor: '#f39c12',
-        backgroundColor: '#f39c12',
-        tension: 0.3
-      },
-      {
-        label: 'Electricity Price',
-        data: [100, 92, 88, 76, 80],
-        borderColor: '#9b59b6',
-        backgroundColor: '#9b59b6',
-        tension: 0.3
-      },
-      {
-        label: 'USD / ILS',
-        data: [100, 110, 68, 50, 45],
-        borderColor: '#2e7d32',
-        backgroundColor: '#2e7d32',
-        tension: 0.3
-      },
-      {
-        label: 'Fruits & Vegetables CPI',
-        data: [100, 112, 105, 121, 128],
-        borderColor: '#00897b',
-        backgroundColor: '#00897b',
-        tension: 0.3
-      }
-    ]
-  },
-  options: {
-    responsive: true,
-    interaction: {
-      mode: 'nearest',
-      intersect: false
-    },
-    plugins: {
-      legend: {
-        position: 'top'
-      },
-      tooltip: {
-        enabled: true
-      }
-    },
-    scales: {
-      y: {
-        beginAtZero: false,
-        title: {
-          display: true,
-          text: 'Index Value'
-        }
-      },
-      x: {
-        title: {
-          display: true,
-          text: 'Year'
-        }
-      }
-    }
-  }
+type:'line',
+data:{
+labels:[1990,2000,2010,2020,2026],
+datasets:[
+{label:'Gold Price',data:[100,70,312,482,680],borderColor:'#c89b1d',backgroundColor:'#c89b1d',borderWidth:4,tension:0.35},
+{label:'Housing Prices',data:[100,152,180,282,355],borderColor:'#d9534f',backgroundColor:'#d9534f',borderWidth:4,tension:0.35},
+{label:'Wage Purchasing Power',data:[100,137,132,160,171],borderColor:'#1976d2',backgroundColor:'#1976d2',borderWidth:4,tension:0.35},
+{label:'Milk Price',data:[100,106,104,88,93],borderColor:'#f39c12',backgroundColor:'#f39c12',borderWidth:4,tension:0.35},
+{label:'Electricity Price',data:[100,92,88,76,80],borderColor:'#9b59b6',backgroundColor:'#9b59b6',borderWidth:4,tension:0.35},
+{label:'USD / ILS',data:[100,110,68,50,45],borderColor:'#2e7d32',backgroundColor:'#2e7d32',borderWidth:4,tension:0.35},
+{label:'Fruits & Vegetables CPI',data:[100,112,105,121,128],borderColor:'#00897b',backgroundColor:'#00897b',borderWidth:4,tension:0.35}
+]
+},
+options:{
+responsive:true,
+maintainAspectRatio:false,
+plugins:{
+legend:{position:'top'},
+tooltip:{enabled:true}
+}
+}
 });
 </script>
 
 </body>
 </html>
-<!-- Trigger redeploy -->

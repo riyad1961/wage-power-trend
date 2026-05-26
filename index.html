@@ -1,78 +1,329 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Israel Market Dashboard</title>
+
+<title>Wage Purchase Power</title>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
-body { margin:0; font-family:Arial,sans-serif; background:#f3f4f6; }
-.container { max-width:1400px; margin:auto; background:white; min-height:100vh; padding:10px; }
-h1 { text-align:center; font-size:28px; margin-bottom:5px; }
-.subtitle { text-align:center; color:#666; margin-bottom:10px; }
-.chart-wrapper { width:100%; height:80vh; background:#fafafa; border-radius:16px; padding:10px; box-sizing:border-box; }
-canvas { width:100%!important; height:100%!important; }
-.info { margin-top:20px; background:#eef6ff; border-radius:16px; padding:15px; }
-summary { font-size:22px; font-weight:bold; cursor:pointer; }
-ul { line-height:1.9; }
-@media (max-width:768px){
-h1 { font-size:22px; }
-.chart-wrapper { height:82vh; }
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#f3f4f6;
 }
+
+.container{
+    max-width:1400px;
+    margin:auto;
+    background:white;
+    min-height:100vh;
+    padding:10px;
+}
+
+h1{
+    text-align:center;
+    font-size:28px;
+    margin-bottom:5px;
+}
+
+.subtitle{
+    text-align:center;
+    color:#666;
+    margin-bottom:15px;
+}
+
+.chart-wrapper{
+    width:100%;
+    height:78vh;
+    background:#fafafa;
+    border-radius:16px;
+    padding:10px;
+    box-sizing:border-box;
+}
+
+canvas{
+    width:100% !important;
+    height:100% !important;
+}
+
+.info-box{
+    margin-top:20px;
+    background:#eef6ff;
+    border-radius:16px;
+    padding:15px;
+}
+
+#yearLabel{
+    font-size:24px;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+#values{
+    line-height:1.8;
+    background:white;
+    padding:15px;
+    border-radius:12px;
+}
+
+@media (max-width:768px){
+
+    h1{
+        font-size:22px;
+    }
+
+    .chart-wrapper{
+        height:82vh;
+    }
+
+}
+
 </style>
+
 </head>
+
 <body>
 
 <div class="container">
-<h1>Israel Market Interactive Dashboard</h1>
 
-<p class="subtitle">Real Index Values (1990 = 100)</p>
+<h1>Wage Purchase Power</h1>
+
+<p class="subtitle">
+Interactive Economic Dashboard
+</p>
 
 <div class="chart-wrapper">
-<canvas id="marketChart"></canvas>
+<canvas id="chart"></canvas>
 </div>
 
-<div class="info">
-<details>
-<summary>Economic Insights</summary>
-<ul>
-<li>Wage purchasing power increased gradually over time.</li>
-<li>Housing prices and gold dramatically outpaced wages.</li>
-<li>Controlled milk and electricity prices remained relatively stable.</li>
-<li>Fruits & vegetables showed moderate inflation.</li>
-<li>USD/ILS declined versus the 1990 baseline.</li>
-</ul>
-</details>
+<div class="info-box">
+
+<div id="yearLabel">
+1990
 </div>
+
+<div id="values"></div>
+
+</div>
+
 </div>
 
 <script>
-const ctx = document.getElementById('marketChart');
 
-new Chart(ctx, {
+const years = [1990,2000,2010,2020,2026];
+
+const dataMap = {
+
+"Gold":[100,70,312,482,680],
+"Housing":[100,152,180,282,355],
+"Wages":[100,137,132,160,171],
+"Milk":[100,106,104,88,93],
+"Electricity":[100,92,88,76,80],
+"USD/ILS":[100,110,68,50,45],
+"Fruit & Veg":[100,112,105,121,128]
+
+};
+
+let activeIndex = 0;
+
+const verticalLinePlugin = {
+
+id:'verticalLine',
+
+afterDraw(chart){
+
+    const x = chart.scales.x.getPixelForValue(activeIndex);
+
+    const ctx = chart.ctx;
+
+    ctx.save();
+
+    ctx.beginPath();
+
+    ctx.moveTo(x, chart.chartArea.top);
+
+    ctx.lineTo(x, chart.chartArea.bottom);
+
+    ctx.lineWidth = 2;
+
+    ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+
+    ctx.stroke();
+
+    ctx.restore();
+
+}
+
+};
+
+const ctx = document.getElementById('chart');
+
+const chart = new Chart(ctx, {
+
 type:'line',
+
 data:{
-labels:[1990,2000,2010,2020,2026],
+
+labels:years,
+
 datasets:[
-{label:'Gold Price',data:[100,70,312,482,680],borderColor:'#c89b1d',backgroundColor:'#c89b1d',borderWidth:4,tension:0.35},
-{label:'Housing Prices',data:[100,152,180,282,355],borderColor:'#d9534f',backgroundColor:'#d9534f',borderWidth:4,tension:0.35},
-{label:'Wage Purchasing Power',data:[100,137,132,160,171],borderColor:'#1976d2',backgroundColor:'#1976d2',borderWidth:4,tension:0.35},
-{label:'Milk Price',data:[100,106,104,88,93],borderColor:'#f39c12',backgroundColor:'#f39c12',borderWidth:4,tension:0.35},
-{label:'Electricity Price',data:[100,92,88,76,80],borderColor:'#9b59b6',backgroundColor:'#9b59b6',borderWidth:4,tension:0.35},
-{label:'USD / ILS',data:[100,110,68,50,45],borderColor:'#2e7d32',backgroundColor:'#2e7d32',borderWidth:4,tension:0.35},
-{label:'Fruits & Vegetables CPI',data:[100,112,105,121,128],borderColor:'#00897b',backgroundColor:'#00897b',borderWidth:4,tension:0.35}
-]
+
+{
+label:'Gold',
+data:dataMap["Gold"],
+borderColor:'gold',
+borderWidth:3,
+tension:0.35
 },
+
+{
+label:'Housing',
+data:dataMap["Housing"],
+borderColor:'red',
+borderWidth:3,
+tension:0.35
+},
+
+{
+label:'Wages',
+data:dataMap["Wages"],
+borderColor:'blue',
+borderWidth:3,
+tension:0.35
+},
+
+{
+label:'Milk',
+data:dataMap["Milk"],
+borderColor:'orange',
+borderWidth:3,
+tension:0.35
+},
+
+{
+label:'Electricity',
+data:dataMap["Electricity"],
+borderColor:'purple',
+borderWidth:3,
+tension:0.35
+},
+
+{
+label:'USD/ILS',
+data:dataMap["USD/ILS"],
+borderColor:'green',
+borderWidth:3,
+tension:0.35
+},
+
+{
+label:'Fruit & Veg',
+data:dataMap["Fruit & Veg"],
+borderColor:'teal',
+borderWidth:3,
+tension:0.35
+}
+
+]
+
+},
+
 options:{
+
 responsive:true,
+
 maintainAspectRatio:false,
+
+interaction:{
+mode:'index',
+intersect:false
+},
+
 plugins:{
-legend:{position:'top'},
-tooltip:{enabled:true}
+
+legend:{
+position:'top'
+},
+
+tooltip:{
+enabled:true
 }
+
 }
+
+},
+
+plugins:[verticalLinePlugin]
+
 });
+
+const yearLabel = document.getElementById('yearLabel');
+const values = document.getElementById('values');
+
+function updateValues(index){
+
+activeIndex = index;
+
+yearLabel.innerHTML = years[index];
+
+let html = '';
+
+for(let key in dataMap){
+
+html += '<b>' + key + '</b>: ' + dataMap[key][index] + '<br>';
+
+}
+
+values.innerHTML = html;
+
+chart.update();
+
+}
+
+ctx.canvas.addEventListener('mousemove', function(e){
+
+const points = chart.getElementsAtEventForMode(
+e,
+'index',
+{intersect:false},
+true
+);
+
+if(points.length){
+
+updateValues(points[0].index);
+
+}
+
+});
+
+ctx.canvas.addEventListener('touchmove', function(e){
+
+const points = chart.getElementsAtEventForMode(
+e,
+'index',
+{intersect:false},
+true
+);
+
+if(points.length){
+
+updateValues(points[0].index);
+
+}
+
+});
+
+updateValues(0);
+
 </script>
 
 </body>
+
 </html>

@@ -9,19 +9,20 @@
 <title>Wage Purchase Power</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
 
 <style>
 
 body{
     margin:0;
     font-family:Arial,sans-serif;
-    background:#f3f4f6;
+    background:#0f172a;
+    color:white;
 }
 
 .container{
     max-width:1400px;
     margin:auto;
-    background:white;
     min-height:100vh;
     padding:10px;
 }
@@ -34,17 +35,18 @@ h1{
 
 .subtitle{
     text-align:center;
-    color:#666;
+    color:#94a3b8;
     margin-bottom:15px;
 }
 
 .chart-wrapper{
     width:100%;
     height:78vh;
-    background:#fafafa;
+    background:#111827;
     border-radius:16px;
     padding:10px;
     box-sizing:border-box;
+    position:relative;
 }
 
 canvas{
@@ -52,24 +54,56 @@ canvas{
     height:100% !important;
 }
 
-.info-box{
-    margin-top:20px;
-    background:#eef6ff;
-    border-radius:16px;
-    padding:15px;
-}
-
-#yearLabel{
-    font-size:24px;
-    font-weight:bold;
-    margin-bottom:10px;
-}
-
-#values{
-    line-height:1.8;
-    background:white;
-    padding:15px;
+.tooltip-box{
+    position:absolute;
+    background:#1e293b;
+    color:white;
+    padding:12px;
     border-radius:12px;
+    font-size:14px;
+    pointer-events:none;
+    display:none;
+    min-width:180px;
+    border:1px solid #334155;
+    box-shadow:0 0 15px rgba(0,0,0,0.4);
+}
+
+.controls{
+    margin-top:20px;
+    background:#111827;
+    padding:15px;
+    border-radius:16px;
+}
+
+.controls h3{
+    margin-top:0;
+}
+
+.toggle-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+    gap:10px;
+}
+
+.toggle-item{
+    background:#1e293b;
+    padding:10px;
+    border-radius:10px;
+}
+
+label{
+    cursor:pointer;
+}
+
+button{
+    margin-top:15px;
+    padding:10px 15px;
+    border:none;
+    border-radius:10px;
+    background:#2563eb;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
 }
 
 @media (max-width:768px){
@@ -99,16 +133,22 @@ Interactive Economic Dashboard
 </p>
 
 <div class="chart-wrapper">
+
 <canvas id="chart"></canvas>
+
+<div class="tooltip-box" id="tooltipBox"></div>
+
 </div>
 
-<div class="info-box">
+<div class="controls">
 
-<div id="yearLabel">
-1990
-</div>
+<h3>Show / Hide Series</h3>
 
-<div id="values"></div>
+<div class="toggle-grid" id="toggleGrid"></div>
+
+<button onclick="chart.resetZoom()">
+Reset Zoom
+</button>
 
 </div>
 
@@ -131,6 +171,36 @@ const dataMap = {
 
 };
 
+const colors = {
+
+"Gold":"gold",
+"Housing":"red",
+"Wages":"#3b82f6",
+"Milk":"orange",
+"Electricity":"purple",
+"USD/ILS":"green",
+"NASDAQ":"white",
+"Fruit & Veg":"teal"
+
+};
+
+const datasets = [];
+
+for(let key in dataMap){
+
+datasets.push({
+
+label:key,
+data:dataMap[key],
+borderColor:colors[key],
+backgroundColor:colors[key],
+borderWidth:3,
+tension:0.35
+
+});
+
+}
+
 let activeIndex = 0;
 
 const verticalLinePlugin = {
@@ -139,25 +209,25 @@ id:'verticalLine',
 
 afterDraw(chart){
 
-    const x = chart.scales.x.getPixelForValue(activeIndex);
+const x = chart.scales.x.getPixelForValue(activeIndex);
 
-    const ctx = chart.ctx;
+const ctx = chart.ctx;
 
-    ctx.save();
+ctx.save();
 
-    ctx.beginPath();
+ctx.beginPath();
 
-    ctx.moveTo(x, chart.chartArea.top);
+ctx.moveTo(x, chart.chartArea.top);
 
-    ctx.lineTo(x, chart.chartArea.bottom);
+ctx.lineTo(x, chart.chartArea.bottom);
 
-    ctx.lineWidth = 2;
+ctx.lineWidth = 2;
 
-    ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+ctx.strokeStyle = 'rgba(255,255,255,0.4)';
 
-    ctx.stroke();
+ctx.stroke();
 
-    ctx.restore();
+ctx.restore();
 
 }
 
@@ -170,77 +240,8 @@ const chart = new Chart(ctx, {
 type:'line',
 
 data:{
-
 labels:years,
-
-datasets:[
-
-{
-label:'Gold',
-data:dataMap["Gold"],
-borderColor:'gold',
-borderWidth:3,
-tension:0.35
-},
-
-{
-label:'Housing',
-data:dataMap["Housing"],
-borderColor:'red',
-borderWidth:3,
-tension:0.35
-},
-
-{
-label:'Wages',
-data:dataMap["Wages"],
-borderColor:'blue',
-borderWidth:3,
-tension:0.35
-},
-
-{
-label:'Milk',
-data:dataMap["Milk"],
-borderColor:'orange',
-borderWidth:3,
-tension:0.35
-},
-
-{
-label:'Electricity',
-data:dataMap["Electricity"],
-borderColor:'purple',
-borderWidth:3,
-tension:0.35
-},
-
-{
-label:'USD/ILS',
-data:dataMap["USD/ILS"],
-borderColor:'green',
-borderWidth:3,
-tension:0.35
-},
-
-{
-label:'NASDAQ',
-data:dataMap["NASDAQ"],
-borderColor:'black',
-borderWidth:3,
-tension:0.35
-},
-
-{
-label:'Fruit & Veg',
-data:dataMap["Fruit & Veg"],
-borderColor:'teal',
-borderWidth:3,
-tension:0.35
-}
-
-]
-
+datasets:datasets
 },
 
 options:{
@@ -257,11 +258,42 @@ intersect:false
 plugins:{
 
 legend:{
-position:'top'
+display:false
 },
 
-tooltip:{
+zoom:{
+
+pan:{
+enabled:true,
+mode:'x'
+},
+
+zoom:{
+wheel:{
 enabled:true
+},
+pinch:{
+enabled:true
+},
+mode:'x'
+}
+
+}
+
+},
+
+scales:{
+
+x:{
+ticks:{
+color:'white'
+}
+},
+
+y:{
+ticks:{
+color:'white'
+}
 }
 
 }
@@ -272,24 +304,28 @@ plugins:[verticalLinePlugin]
 
 });
 
-const yearLabel = document.getElementById('yearLabel');
-const values = document.getElementById('values');
+const tooltipBox = document.getElementById('tooltipBox');
 
-function updateValues(index){
+function updateTooltip(index, x, y){
 
 activeIndex = index;
 
-yearLabel.innerHTML = years[index];
-
-let html = '';
+let html = '<b>Year: ' + years[index] + '</b><br><br>';
 
 for(let key in dataMap){
 
-html += '<b>' + key + '</b>: ' + dataMap[key][index] + '<br>';
+html += '<span style="color:' + colors[key] + '">●</span> ';
+html += key + ': <b>' + dataMap[key][index] + '</b><br>';
 
 }
 
-values.innerHTML = html;
+tooltipBox.innerHTML = html;
+
+tooltipBox.style.display = 'block';
+
+tooltipBox.style.left = (x + 20) + 'px';
+
+tooltipBox.style.top = (y + 20) + 'px';
 
 chart.update();
 
@@ -306,7 +342,11 @@ true
 
 if(points.length){
 
-updateValues(points[0].index);
+updateTooltip(
+points[0].index,
+e.offsetX,
+e.offsetY
+);
 
 }
 
@@ -314,8 +354,17 @@ updateValues(points[0].index);
 
 ctx.canvas.addEventListener('touchmove', function(e){
 
+const touch = e.touches[0];
+
+const rect = ctx.canvas.getBoundingClientRect();
+
+const fakeEvent = {
+x:touch.clientX - rect.left,
+y:touch.clientY - rect.top
+};
+
 const points = chart.getElementsAtEventForMode(
-e,
+fakeEvent,
 'index',
 {intersect:false},
 true
@@ -323,13 +372,44 @@ true
 
 if(points.length){
 
-updateValues(points[0].index);
+updateTooltip(
+points[0].index,
+fakeEvent.x,
+fakeEvent.y
+);
 
 }
 
 });
 
-updateValues(0);
+const toggleGrid = document.getElementById('toggleGrid');
+
+chart.data.datasets.forEach((ds, index)=>{
+
+const div = document.createElement('div');
+
+div.className = 'toggle-item';
+
+div.innerHTML = `
+<label>
+<input type="checkbox" checked data-index="${index}">
+${ds.label}
+</label>
+`;
+
+toggleGrid.appendChild(div);
+
+});
+
+toggleGrid.addEventListener('change', function(e){
+
+const index = e.target.dataset.index;
+
+chart.setDatasetVisibility(index, e.target.checked);
+
+chart.update();
+
+});
 
 </script>
 

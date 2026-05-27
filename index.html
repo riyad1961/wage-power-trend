@@ -9,20 +9,19 @@
 <title>Wage Purchase Power</title>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
 
 <style>
 
 body{
     margin:0;
     font-family:Arial,sans-serif;
-    background:#0f172a;
-    color:white;
+    background:#f3f4f6;
 }
 
 .container{
     max-width:1400px;
     margin:auto;
+    background:white;
     min-height:100vh;
     padding:10px;
 }
@@ -35,75 +34,23 @@ h1{
 
 .subtitle{
     text-align:center;
-    color:#94a3b8;
+    color:#666;
     margin-bottom:15px;
 }
 
 .chart-wrapper{
     width:100%;
-    height:78vh;
-    background:#111827;
+    height:80vh;
+    background:white;
     border-radius:16px;
     padding:10px;
     box-sizing:border-box;
-    position:relative;
+    border:1px solid #ddd;
 }
 
 canvas{
     width:100% !important;
     height:100% !important;
-}
-
-.tooltip-box{
-    position:absolute;
-    background:#1e293b;
-    color:white;
-    padding:12px;
-    border-radius:12px;
-    font-size:14px;
-    pointer-events:none;
-    display:none;
-    min-width:180px;
-    border:1px solid #334155;
-    box-shadow:0 0 15px rgba(0,0,0,0.4);
-}
-
-.controls{
-    margin-top:20px;
-    background:#111827;
-    padding:15px;
-    border-radius:16px;
-}
-
-.controls h3{
-    margin-top:0;
-}
-
-.toggle-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
-    gap:10px;
-}
-
-.toggle-item{
-    background:#1e293b;
-    padding:10px;
-    border-radius:10px;
-}
-
-label{
-    cursor:pointer;
-}
-
-button{
-    margin-top:15px;
-    padding:10px 15px;
-    border:none;
-    border-radius:10px;
-    background:#2563eb;
-    color:white;
-    font-weight:bold;
-    cursor:pointer;
 }
 
 @media (max-width:768px){
@@ -133,23 +80,7 @@ Interactive Economic Dashboard
 </p>
 
 <div class="chart-wrapper">
-
 <canvas id="chart"></canvas>
-
-<div class="tooltip-box" id="tooltipBox"></div>
-
-</div>
-
-<div class="controls">
-
-<h3>Show / Hide Series</h3>
-
-<div class="toggle-grid" id="toggleGrid"></div>
-
-<button onclick="chart.resetZoom()">
-Reset Zoom
-</button>
-
 </div>
 
 </div>
@@ -157,49 +88,6 @@ Reset Zoom
 <script>
 
 const years = [1990,2000,2010,2020,2026];
-
-const dataMap = {
-
-"Gold":[100,70,312,482,680],
-"Housing":[100,152,180,282,355],
-"Wages":[100,137,132,160,171],
-"Milk":[100,106,104,88,93],
-"Electricity":[100,92,88,76,80],
-"USD/ILS":[100,110,68,50,45],
-"NASDAQ":[100,185,170,640,920],
-"Fruit & Veg":[100,112,105,121,128]
-
-};
-
-const colors = {
-
-"Gold":"gold",
-"Housing":"red",
-"Wages":"#3b82f6",
-"Milk":"orange",
-"Electricity":"purple",
-"USD/ILS":"green",
-"NASDAQ":"white",
-"Fruit & Veg":"teal"
-
-};
-
-const datasets = [];
-
-for(let key in dataMap){
-
-datasets.push({
-
-label:key,
-data:dataMap[key],
-borderColor:colors[key],
-backgroundColor:colors[key],
-borderWidth:3,
-tension:0.35
-
-});
-
-}
 
 let activeIndex = 0;
 
@@ -223,7 +111,7 @@ ctx.lineTo(x, chart.chartArea.bottom);
 
 ctx.lineWidth = 2;
 
-ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+ctx.strokeStyle = 'rgba(0,0,0,0.3)';
 
 ctx.stroke();
 
@@ -240,8 +128,77 @@ const chart = new Chart(ctx, {
 type:'line',
 
 data:{
+
 labels:years,
-datasets:datasets
+
+datasets:[
+
+{
+label:'Gold',
+data:[100,70,312,482,680],
+borderColor:'gold',
+borderWidth:3,
+tension:0.35
+},
+
+{
+label:'Housing',
+data:[100,152,180,282,355],
+borderColor:'red',
+borderWidth:3,
+tension:0.35
+},
+
+{
+label:'Wages',
+data:[100,137,132,160,171],
+borderColor:'blue',
+borderWidth:3,
+tension:0.35
+},
+
+{
+label:'Milk',
+data:[100,106,104,88,93],
+borderColor:'orange',
+borderWidth:3,
+tension:0.35
+},
+
+{
+label:'Electricity',
+data:[100,92,88,76,80],
+borderColor:'purple',
+borderWidth:3,
+tension:0.35
+},
+
+{
+label:'USD/ILS',
+data:[100,110,68,50,45],
+borderColor:'green',
+borderWidth:3,
+tension:0.35
+},
+
+{
+label:'NASDAQ',
+data:[100,185,170,640,920],
+borderColor:'black',
+borderWidth:3,
+tension:0.35
+},
+
+{
+label:'Fruit & Veg',
+data:[100,112,105,121,128],
+borderColor:'teal',
+borderWidth:3,
+tension:0.35
+}
+
+]
+
 },
 
 options:{
@@ -258,26 +215,14 @@ intersect:false
 plugins:{
 
 legend:{
-display:false
+display:true,
+position:'top'
 },
 
-zoom:{
-
-pan:{
+tooltip:{
 enabled:true,
-mode:'x'
-},
-
-zoom:{
-wheel:{
-enabled:true
-},
-pinch:{
-enabled:true
-},
-mode:'x'
-}
-
+mode:'index',
+intersect:false
 }
 
 },
@@ -285,15 +230,11 @@ mode:'x'
 scales:{
 
 x:{
-ticks:{
-color:'white'
-}
+display:true
 },
 
 y:{
-ticks:{
-color:'white'
-}
+display:true
 }
 
 }
@@ -304,32 +245,20 @@ plugins:[verticalLinePlugin]
 
 });
 
-const tooltipBox = document.getElementById('tooltipBox');
+chart.data.datasets.forEach((ds, index)=>{
 
-function updateTooltip(index, x, y){
+if(
+ds.label !== 'Wages' &&
+ds.label !== 'Milk'
+){
 
-activeIndex = index;
-
-let html = '<b>Year: ' + years[index] + '</b><br><br>';
-
-for(let key in dataMap){
-
-html += '<span style="color:' + colors[key] + '">●</span> ';
-html += key + ': <b>' + dataMap[key][index] + '</b><br>';
+chart.setDatasetVisibility(index, false);
 
 }
 
-tooltipBox.innerHTML = html;
-
-tooltipBox.style.display = 'block';
-
-tooltipBox.style.left = (x + 20) + 'px';
-
-tooltipBox.style.top = (y + 20) + 'px';
+});
 
 chart.update();
-
-}
 
 ctx.canvas.addEventListener('mousemove', function(e){
 
@@ -342,11 +271,9 @@ true
 
 if(points.length){
 
-updateTooltip(
-points[0].index,
-e.offsetX,
-e.offsetY
-);
+activeIndex = points[0].index;
+
+chart.update();
 
 }
 
@@ -372,42 +299,11 @@ true
 
 if(points.length){
 
-updateTooltip(
-points[0].index,
-fakeEvent.x,
-fakeEvent.y
-);
-
-}
-
-});
-
-const toggleGrid = document.getElementById('toggleGrid');
-
-chart.data.datasets.forEach((ds, index)=>{
-
-const div = document.createElement('div');
-
-div.className = 'toggle-item';
-
-div.innerHTML = `
-<label>
-<input type="checkbox" checked data-index="${index}">
-${ds.label}
-</label>
-`;
-
-toggleGrid.appendChild(div);
-
-});
-
-toggleGrid.addEventListener('change', function(e){
-
-const index = e.target.dataset.index;
-
-chart.setDatasetVisibility(index, e.target.checked);
+activeIndex = points[0].index;
 
 chart.update();
+
+}
 
 });
 

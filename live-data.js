@@ -1,4 +1,3 @@
-const dataStatus = document.getElementById('dataStatus');
 const latestDataIndex = chart.data.labels.length - 1;
 
 const cbsPriceSeries = {
@@ -108,16 +107,12 @@ async function refreshLatestData(){
     ];
     const results = await Promise.allSettled(requests.map(([, request]) => request));
     const updated = [];
-    const failed = [];
-    const dates = [];
 
     results.forEach((result, index) => {
         const label = requests[index][0];
         if(result.status === 'fulfilled'){
             updated.push(label);
-            dates.push(result.value);
         }else{
-            failed.push(label);
             console.warn(`Could not refresh ${label}:`, result.reason);
         }
     });
@@ -133,17 +128,10 @@ async function refreshLatestData(){
         ? `Updated ${updateDay}`
         : 'Update unavailable';
     chart.update();
-    if(updated.length === requests.length){
-        dataStatus.textContent = `Live data loaded (${[...new Set(dates)].join(', ')})`;
-    }else{
-        dataStatus.classList.add('error');
-        dataStatus.textContent = updated.length
-            ? `Updated ${updated.length} series; saved values used for ${failed.join(', ')}`
-            : 'Live sources unavailable; showing saved values';
-    }
 }
 
 refreshLatestData();
+
 
 
 

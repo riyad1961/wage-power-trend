@@ -39,19 +39,7 @@ h1{
 .subtitle{
     text-align:center;
     color:#666;
-    margin-bottom:4px;
-}
-
-.data-status{
-    min-height:18px;
-    text-align:center;
-    color:#2563eb;
-    font-size:13px;
-    margin:0 0 12px;
-}
-
-.data-status.error{
-    color:#b45309;
+    margin-bottom:15px;
 }
 
 .chart-wrapper{
@@ -93,10 +81,6 @@ canvas{
 
 <p class="subtitle">
 Interactive Economic Dashboard
-</p>
-
-<p class="data-status" id="dataStatus" aria-live="polite">
-Loading the latest data…
 </p>
 
 <div class="chart-wrapper">
@@ -163,7 +147,7 @@ ctx.font = '500 12px Arial';
 const paddingX = 10;
 const height = 24;
 const width = ctx.measureText(text).width + paddingX * 2;
-const x = chartArea.right - width;
+const x = chartArea.left;
 const y = chartArea.top - 29;
 const radius = 12;
 
@@ -363,7 +347,7 @@ ctx.addEventListener('touchmove', function(e){
 
 const touch = e.touches[0];
 
-const rect = ctx.canvas.getBoundingClientRect();
+const rect = ctx.getBoundingClientRect();
 
 const fakeEvent = {
 x:touch.clientX - rect.left,
@@ -393,5 +377,7 @@ chart.update();
 </body>
 
 </html>
+
+
 
 

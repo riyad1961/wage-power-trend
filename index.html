@@ -39,7 +39,19 @@ h1{
 .subtitle{
     text-align:center;
     color:#666;
-    margin-bottom:15px;
+    margin-bottom:4px;
+}
+
+.data-status{
+    min-height:18px;
+    text-align:center;
+    color:#2563eb;
+    font-size:13px;
+    margin:0 0 12px;
+}
+
+.data-status.error{
+    color:#b45309;
 }
 
 .chart-wrapper{
@@ -83,6 +95,10 @@ canvas{
 Interactive Economic Dashboard
 </p>
 
+<p class="data-status" id="dataStatus" aria-live="polite">
+Loading the latest data…
+</p>
+
 <div class="chart-wrapper">
 <canvas id="chart"></canvas>
 </div>
@@ -91,7 +107,7 @@ Interactive Economic Dashboard
 
 <script>
 
-const years = [1990,2000,2010,2020,2026];
+const years = [1990,2000,2010,2020,'Latest'];
 
 let activeIndex = 0;
 
@@ -125,6 +141,60 @@ ctx.restore();
 
 };
 
+window.chartUpdateLabel = 'Checking latest data…';
+
+const updateStampPlugin = {
+
+id:'updateStamp',
+
+afterDraw(chart){
+
+const text = window.chartUpdateLabel;
+
+if(!text){
+return;
+}
+
+const {ctx, chartArea} = chart;
+
+ctx.save();
+ctx.font = '500 12px Arial';
+
+const paddingX = 10;
+const height = 24;
+const width = ctx.measureText(text).width + paddingX * 2;
+const x = chartArea.right - width;
+const y = chartArea.top - 29;
+const radius = 12;
+
+ctx.beginPath();
+ctx.moveTo(x + radius, y);
+ctx.lineTo(x + width - radius, y);
+ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+ctx.lineTo(x + width, y + height - radius);
+ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+ctx.lineTo(x + radius, y + height);
+ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+ctx.lineTo(x, y + radius);
+ctx.quadraticCurveTo(x, y, x + radius, y);
+ctx.closePath();
+
+ctx.fillStyle = 'rgba(37,99,235,0.10)';
+ctx.fill();
+ctx.strokeStyle = 'rgba(37,99,235,0.28)';
+ctx.lineWidth = 1;
+ctx.stroke();
+
+ctx.fillStyle = '#1d4ed8';
+ctx.textAlign = 'center';
+ctx.textBaseline = 'middle';
+ctx.fillText(text, x + width / 2, y + height / 2);
+
+ctx.restore();
+
+}
+
+};
 const ctx = document.getElementById('chart');
 
 const chart = new Chart(ctx, {
@@ -211,6 +281,12 @@ responsive:true,
 
 maintainAspectRatio:false,
 
+layout:{
+padding:{
+top:32
+}
+},
+
 interaction:{
 mode:'index',
 intersect:false
@@ -245,7 +321,7 @@ display:true
 
 },
 
-plugins:[verticalLinePlugin]
+plugins:[verticalLinePlugin, updateStampPlugin]
 
 });
 
@@ -264,7 +340,7 @@ chart.setDatasetVisibility(index, false);
 
 chart.update();
 
-ctx.canvas.addEventListener('mousemove', function(e){
+ctx.addEventListener('mousemove', function(e){
 
 const points = chart.getElementsAtEventForMode(
 e,
@@ -283,7 +359,7 @@ chart.update();
 
 });
 
-ctx.canvas.addEventListener('touchmove', function(e){
+ctx.addEventListener('touchmove', function(e){
 
 const touch = e.touches[0];
 
@@ -312,7 +388,10 @@ chart.update();
 });
 
 </script>
+<script src="live-data.js"></script>
 
 </body>
 
 </html>
+
+

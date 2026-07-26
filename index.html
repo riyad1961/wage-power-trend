@@ -148,7 +148,7 @@ const paddingX = 10;
 const height = 24;
 const width = ctx.measureText(text).width + paddingX * 2;
 const x = chartArea.left;
-const y = chartArea.top - 29;
+const y = chartArea.top + 8;
 const radius = 12;
 
 ctx.beginPath();
@@ -265,12 +265,6 @@ responsive:true,
 
 maintainAspectRatio:false,
 
-layout:{
-padding:{
-top:32
-}
-},
-
 interaction:{
 mode:'index',
 intersect:false
@@ -377,6 +371,7 @@ chart.update();
 </body>
 
 </html>
+
 
 
 

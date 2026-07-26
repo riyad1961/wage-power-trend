@@ -179,6 +179,62 @@ ctx.restore();
 }
 
 };
+const visibilityStorageKey = 'wage-power-trend.dataset-visibility.v1';
+const defaultLegendClick = Chart.defaults.plugins.legend.onClick;
+
+function saveDatasetVisibility(){
+
+try{
+
+const visibility = Object.fromEntries(
+chart.data.datasets.map((dataset, index) => [
+dataset.label,
+chart.isDatasetVisible(index)
+])
+);
+
+localStorage.setItem(
+visibilityStorageKey,
+JSON.stringify(visibility)
+);
+
+}catch(error){
+console.warn('Could not save graph selections:', error);
+}
+
+}
+
+function restoreDatasetVisibility(){
+
+try{
+
+const saved = JSON.parse(
+localStorage.getItem(visibilityStorageKey) || 'null'
+);
+
+if(!saved || typeof saved !== 'object'){
+return false;
+}
+
+let restored = false;
+
+chart.data.datasets.forEach((dataset, index) => {
+
+if(typeof saved[dataset.label] === 'boolean'){
+chart.setDatasetVisibility(index, saved[dataset.label]);
+restored = true;
+}
+
+});
+
+return restored;
+
+}catch(error){
+console.warn('Could not restore graph selections:', error);
+return false;
+}
+
+}
 const ctx = document.getElementById('chart');
 
 const chart = new Chart(ctx, {
@@ -274,7 +330,11 @@ plugins:{
 
 legend:{
 display:true,
-position:'top'
+position:'top',
+onClick(event, legendItem, legend){
+defaultLegendClick.call(this, event, legendItem, legend);
+saveDatasetVisibility();
+}
 },
 
 tooltip:{
@@ -303,6 +363,10 @@ plugins:[verticalLinePlugin, updateStampPlugin]
 
 });
 
+const restoredVisibility = restoreDatasetVisibility();
+
+if(!restoredVisibility){
+
 chart.data.datasets.forEach((ds, index)=>{
 
 if(
@@ -315,6 +379,8 @@ chart.setDatasetVisibility(index, false);
 }
 
 });
+
+}
 
 chart.update();
 
@@ -371,6 +437,8 @@ chart.update();
 </body>
 
 </html>
+
+
 
 
 
